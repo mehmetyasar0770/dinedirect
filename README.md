@@ -9,3 +9,4 @@ Currently, two official plugins are available:
 
 AntDesign components are being used in the project
 Tailwind CSS classes are being used in the project
+React Router Dom is being used for client side routing
