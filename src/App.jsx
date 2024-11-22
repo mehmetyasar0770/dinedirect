@@ -1,5 +1,6 @@
 import { useState } from "react";
 import menuData from "./data/menudata";
+import Header from "./Header";
 
 function App() {
   // Benzersiz kategori isimlerini al ve "Tümü" sekmesini ekle
@@ -15,6 +16,9 @@ function App() {
       : menuData.filter((item) => item.category === activeTab);
 
   return (
+    <>
+    <Header/>
+    <main className="mt-20 container mx-auto p-4">
     <div className="container mx-auto p-4">
       {/* Tab Menüsü */}
       <div className="mb-4 flex space-x-4">
@@ -49,6 +53,8 @@ function App() {
         ))}
       </div>
     </div>
+    </main>
+    </>
   );
 }
 
