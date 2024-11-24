@@ -10,7 +10,7 @@ function Header({ cartCount }) {
           <Link to="/" className="text-2xl font-bold text-blue-500">
             DineDirect
           </Link>
-          <div className="text-sm text-gray-500">Experience the taste, click!</div>
+          <div className="text-sm text-gray-500">Lezzet deneyimini klikle!</div>
         </div>
 
         {/* Sağ Menü */}

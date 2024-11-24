@@ -5,9 +5,9 @@ function Home() {
     <div className="text-center">
       <h1 className="text-3xl font-bold mb-6">Hoş Geldiniz!</h1>
       <p className="text-gray-600 mb-4">
-        Lezzetli yemeklerin tadını çıkarmak için menüye göz atın.
+        Enfes lezzetler sadece birkaç tık uzağınızda. Menümüzü görmek için klikleyin!
       </p>
-      {/* Görsel ve Link */}
+      
       <Link to="/menu">
         <img
           src="https://static7.depositphotos.com/1035468/773/v/950/depositphotos_7734891-stock-illustration-cartoon-chef-cook.jpg"
