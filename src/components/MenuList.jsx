@@ -1,6 +1,6 @@
 import { useState } from "react";
 import MenuItem from "./MenuItem";
-import menuData from "./data/menuData";
+import menuData from "../data/menuData";
 
 function MenuList({ onAddToCart }) {
   // Benzersiz kategorileri al ve başa "Tümü" sekmesini ekle

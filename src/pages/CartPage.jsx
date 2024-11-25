@@ -1,4 +1,4 @@
-import Cart from "../Cart";
+import Cart from "../components/Cart";
 
 function CartPage({ cartItems, onIncreaseCount, onDecreaseCount, onRemoveItem }) {
   return (
