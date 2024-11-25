@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 function Checkout() {
   const [step, setStep] = useState(1); // Adımları kontrol eden durum
@@ -77,7 +78,7 @@ function Checkout() {
         <div>
           <h2 className="text-2xl font-bold text-center mb-4">Siparişiniz Alındı!</h2>
           <p className="text-gray-600 text-center">Siparişiniz başarıyla alındı. Teşekkür ederiz!</p>
-          <p className="text-gray-600 text-center">Müşteri girişinden e-mail ve adınızla giriş yaparak sipariş durumunuzu izleyebilirsiniz</p>
+          <Link to="/login" ><p className="text-blue-600 text-center">Müşteri girişinden e-mail ve adınızla giriş yaparak sipariş durumunuzu izleyebilirsiniz</p> </Link>
         </div>
       )}
     </div>

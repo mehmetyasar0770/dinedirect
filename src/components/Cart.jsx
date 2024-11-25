@@ -1,7 +1,14 @@
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 
-function Cart({ cartItems, onIncreaseCount, onDecreaseCount, onRemoveItem }) {
+function Cart() {
   const navigate = useNavigate(); // React Router yönlendirme hook'u
+  const {
+    cartItems,
+    handleIncreaseCount,
+    handleDecreaseCount,
+    handleRemoveItem,
+  } = useCart(); // CartContext üzerinden sepet işlemleri
 
   // Alt toplam hesaplama
   const subTotal = cartItems.reduce((total, item) => total + item.price * item.count, 0);
@@ -16,7 +23,7 @@ function Cart({ cartItems, onIncreaseCount, onDecreaseCount, onRemoveItem }) {
       {cartItems.length === 0 ? (
         <p className="text-gray-600">Sepetinizde ürün bulunmamaktadır.</p>
       ) : (
-        <>
+        <div>
           <div className="grid grid-cols-1 gap-4">
             {cartItems.map((item) => (
               <div
@@ -34,7 +41,7 @@ function Cart({ cartItems, onIncreaseCount, onDecreaseCount, onRemoveItem }) {
                 <div className="flex items-center space-x-4">
                   {/* Sayı Azalt */}
                   <button
-                    onClick={() => onDecreaseCount(item.id)}
+                    onClick={() => handleDecreaseCount(item.id)}
                     className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
                   >
                     -
@@ -43,14 +50,14 @@ function Cart({ cartItems, onIncreaseCount, onDecreaseCount, onRemoveItem }) {
                   <span className="text-lg font-bold">{item.count}</span>
                   {/* Sayı Arttır */}
                   <button
-                    onClick={() => onIncreaseCount(item.id)}
+                    onClick={() => handleIncreaseCount(item.id)}
                     className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
                   >
                     +
                   </button>
                   {/* Ürünü Kaldır */}
                   <button
-                    onClick={() => onRemoveItem(item.id)}
+                    onClick={() => handleRemoveItem(item.id)}
                     className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                   >
                     Sil
@@ -70,7 +77,7 @@ function Cart({ cartItems, onIncreaseCount, onDecreaseCount, onRemoveItem }) {
               Alışverişi Tamamla
             </button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
