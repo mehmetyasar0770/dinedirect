@@ -7,6 +7,7 @@ import Cart from "./pages/CartPage";
 import Checkout from "./pages/Checkout";
 import Login from "./pages/Login";
 import { CartProvider } from "./context/CartContext";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Router>
         <Header />
         <main className="mt-20 container mx-auto p-4">
+          <Toaster/>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/menu" element={<Menu />} />

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import menuData from "../data/menuData";
+import toast from "react-hot-toast";
 
 function Menu() {
   const { handleAddToCart } = useCart(); // CartContext üzerinden ürün ekleme fonksiyonu
@@ -48,7 +49,11 @@ function Menu() {
             <p className="text-gray-600">{item.description}</p>
             <p className="text-green-600 font-bold">{item.price}₺</p>
             <button
-              onClick={() => handleAddToCart(item)} // Sepete ürün ekle
+              onClick={() => {
+                handleAddToCart(item)
+                toast.success('Seçilen ürün sepetinize eklendi!')
+
+              }} // Sepete ürün ekle
               className="mt-4 px-4 py-2 bg-blue-500 text-white font-bold rounded hover:bg-blue-600"
             >
               Sepete Ekle
