@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 
 function Login() {
   const [role, setRole] = useState(""); // Rol seçimi
@@ -30,6 +31,7 @@ function Login() {
 
   return (
     <div className="container mx-auto p-4">
+      <Header/>
       <h2 className="text-2xl font-bold mb-4">Giriş Yap</h2>
       <form onSubmit={handleSubmit}>
         {/* Rol Seçimi */}

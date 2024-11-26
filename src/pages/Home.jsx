@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom";
+import Header from "../components/Header";
 
 function Home() {
   return (
+    <>
+   
     <div className="text-center">
+    <Header/>
       <h1 className="text-3xl font-bold mb-6">Hoş Geldiniz!</h1>
       <Link to = "/menu">
       <p className="text-blue-600 mb-4 ">
@@ -15,6 +19,7 @@ function Home() {
         />
       </Link>
     </div>
+    </>
   );
 }
 

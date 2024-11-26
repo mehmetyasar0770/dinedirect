@@ -1,24 +1,25 @@
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
-import menuData from "../data/menuData";
+import { useMenu } from "../context/MenuContext";
 import toast from "react-hot-toast";
 
-function Menu() {
-  const { handleAddToCart } = useCart(); // CartContext üzerinden ürün ekleme fonksiyonu
+function MenuList() {
+  const { handleAddToCart } = useCart(); // Sepete ürün ekleme fonksiyonu
+  const { products } = useMenu(); // MenuContext üzerinden ürünleri al
   const [activeCategory, setActiveCategory] = useState("Tümü"); // Varsayılan kategori
 
   // Kategorileri dinamik olarak oluştur
-  const categories = ["Tümü", ...new Set(menuData.map((item) => item.category))];
+  const categories = ["Tümü", ...new Set(products.map((item) => item.category))];
 
   // Seçili kategoriye göre ürünleri filtrele
-  const filteredMenu = activeCategory === "Tümü"
-    ? menuData
-    : menuData.filter((item) => item.category === activeCategory);
+  const filteredMenu =
+    activeCategory === "Tümü"
+      ? products
+      : products.filter((item) => item.category === activeCategory);
 
   return (
     <div>
-      
-
+     
       {/* Kategori Sekmeleri */}
       <div className="flex justify-center space-x-4 mb-6">
         {categories.map((category) => (
@@ -50,10 +51,9 @@ function Menu() {
             <p className="text-green-600 font-bold">{item.price}₺</p>
             <button
               onClick={() => {
-                handleAddToCart(item)
-                toast.success('Seçilen ürün sepetinize eklendi!')
-
-              }} // Sepete ürün ekle
+                handleAddToCart(item);
+                toast.success("Seçilen ürün sepetinize eklendi!");
+              }}
               className="mt-4 px-4 py-2 bg-blue-500 text-white font-bold rounded hover:bg-blue-600"
             >
               Sepete Ekle
@@ -65,4 +65,4 @@ function Menu() {
   );
 }
 
-export default Menu;
+export default MenuList;

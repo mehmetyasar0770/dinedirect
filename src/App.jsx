@@ -1,30 +1,55 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useState } from "react";
-import Header from "./components/Header";
 import Home from "./pages/Home";
 import Menu from "./pages/Menu";
-import Cart from "./pages/CartPage";
 import Checkout from "./pages/Checkout";
 import Login from "./pages/Login";
+import CustomerOrders from "./pages/CustomerOrders";
 import { CartProvider } from "./context/CartContext";
 import { Toaster } from "react-hot-toast";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import CartPage from "./pages/CartPage";
+import AdminDashboard from "./pages/AdminDashboard";
+import { MenuProvider } from "./context/MenuContext";
 
 function App() {
+
+  const router = createBrowserRouter([
+    {
+      path:"/",
+      element:<Home/>,
+    },
+    {
+      path:"/menu",
+      element:<Menu/>,
+    },
+    {
+      path:"/cart",
+      element:<CartPage/>,
+    },
+    {
+      path:"/login",
+      element:<Login/>,
+    },
+    {
+      path:"/checkout",
+      element:<Checkout/>,
+    },
+    {
+      path:"/customer-orders",
+      element:<CustomerOrders/>,
+    },
+    {
+      path:"/admin-dashboard",
+      element:<AdminDashboard/>,
+    },
+  ])
   return (
-    <CartProvider>
-      <Router>
-        <Header />
+    <CartProvider> 
+      <MenuProvider>
         <main className="mt-20 container mx-auto p-4">
           <Toaster/>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/menu" element={<Menu />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/checkout" element={<Checkout />} />
-          </Routes>
-        </main>
-      </Router>
+          <RouterProvider router={router} /> 
+      </main>
+      </MenuProvider>
     </CartProvider>
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Header from "../components/Header";
 
 function CustomerOrders() {
   const [activeTab, setActiveTab] = useState("previous"); // Varsayılan sekme
@@ -17,6 +18,7 @@ function CustomerOrders() {
 
   return (
     <div className="container mx-auto p-4">
+      <Header/>
       <h2 className="text-2xl font-bold mb-4">Siparişlerim</h2>
       {/* Sekme Menüsü */}
       <div className="mb-4 flex space-x-4">
