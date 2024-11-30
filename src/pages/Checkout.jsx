@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Header from "../components/Header";
+
 
 function Checkout() {
   const [step, setStep] = useState(1); // Adımları kontrol eden durum
@@ -9,7 +9,7 @@ function Checkout() {
 
   return (
     <div className="container mx-auto p-4">
-      <Header/>
+      
       {/* Progress Bar */}
       <div className="flex justify-between items-center mb-6">
         <div className={`flex-1 border-b-4 ${step >= 1 ? "border-blue-500" : "border-gray-300"}`} />

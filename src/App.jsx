@@ -9,38 +9,48 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import CartPage from "./pages/CartPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import { MenuProvider } from "./context/MenuContext";
+import MainLayout from "./layouts/MainLayout";
 
 function App() {
 
   const router = createBrowserRouter([
     {
       path:"/",
-      element:<Home/>,
-    },
-    {
-      path:"/menu",
-      element:<Menu/>,
-    },
-    {
-      path:"/cart",
-      element:<CartPage/>,
-    },
-    {
-      path:"/login",
-      element:<Login/>,
-    },
-    {
-      path:"/checkout",
-      element:<Checkout/>,
-    },
-    {
-      path:"/customer-orders",
-      element:<CustomerOrders/>,
-    },
-    {
-      path:"/admin-dashboard",
-      element:<AdminDashboard/>,
-    },
+      element: <MainLayout/>,
+      children: [
+        {
+          path:"/",
+          element:<Home/>,
+        },
+        {
+          path:"/menu",
+          element:<Menu/>,
+        },
+        {
+          path:"/cart",
+          element:<CartPage/>,
+        },
+        {
+          path:"/login",
+          element:<Login/>,
+        },
+        {
+          path:"/checkout",
+          element:<Checkout/>,
+        },
+        {
+          path:"/customer-orders",
+          element:<CustomerOrders/>,
+        },
+        {
+          path:"/admin-dashboard",
+          element:<AdminDashboard/>,
+        },
+
+      ]
+
+    }
+    
   ])
   return (
     <CartProvider> 

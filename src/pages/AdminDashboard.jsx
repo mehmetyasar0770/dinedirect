@@ -1,7 +1,7 @@
 import { Tabs, Input, Select, Button, Table, Form } from "antd";
 import { useState } from "react";
 import { useMenu } from "../context/MenuContext";
-import Header from "../components/Header";
+
 
 const { TabPane } = Tabs;
 
@@ -111,7 +111,7 @@ function AdminDashboard() {
 
   return (
     <>
-      <Header />
+   
       <div className="container mx-auto p-6">
         <h2 className="text-3xl font-bold mb-6">Admin Dashboard</h2>
         <Tabs defaultActiveKey="1" className="bg-white shadow-lg rounded-lg p-4">
