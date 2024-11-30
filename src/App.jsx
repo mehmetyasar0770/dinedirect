@@ -48,7 +48,7 @@ function App() {
           element:<AdminDashboard/>,
         },
         {
-          path:"/*",
+          path:"*",
           element:<NotFound/>,
         },
 
