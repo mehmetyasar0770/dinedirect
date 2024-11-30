@@ -10,6 +10,7 @@ import CartPage from "./pages/CartPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import { MenuProvider } from "./context/MenuContext";
 import MainLayout from "./layouts/MainLayout";
+import NotFound from "./pages/NotFound";
 
 function App() {
 
@@ -45,6 +46,10 @@ function App() {
         {
           path:"/admin-dashboard",
           element:<AdminDashboard/>,
+        },
+        {
+          path:"/*",
+          element:<NotFound/>,
         },
 
       ]
