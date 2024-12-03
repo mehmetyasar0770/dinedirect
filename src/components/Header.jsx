@@ -29,9 +29,10 @@ function Header() {
               </span>
             )}
           </Link>
-          <Link to="/login">
+          <Link to="/customer-orders">
             <UserOutlined className="text-2xl text-gray-700 cursor-pointer hover:text-blue-500" />
           </Link>
+          
         </div>
       </div>
     </header>

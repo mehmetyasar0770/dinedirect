@@ -3,30 +3,23 @@ import { useNavigate } from "react-router-dom";
 
 
 function Login() {
-  const [role, setRole] = useState(""); // Rol seçimi
+  const [loggedIn, setLoggedIn] = useState(false); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  
 
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Rol seçimine göre yönlendirme
-    if (role === "customer") {
-      if (email && name) {
-        navigate("/customer-orders"); // Müşteri ekranına yönlendir
-      } else {
-        alert("Lütfen tüm alanları doldurun.");
-      }
-    } else if (role === "admin") {
       if (email && password) {
-        navigate("/admin-dashboard"); // Admin paneline yönlendir
+        setLoggedIn(true);
+        navigate("/menu"); // Menüye yönlendirme
       } else {
         alert("Lütfen tüm alanları doldurun.");
       }
-    }
+   
   };
 
   return (
@@ -34,20 +27,7 @@ function Login() {
     
       <h2 className="text-2xl font-bold mb-4">Giriş Yap</h2>
       <form onSubmit={handleSubmit}>
-        {/* Rol Seçimi */}
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-2">Rol Seçimi:</label>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="w-full p-2 border rounded"
-          >
-            <option value="">Bir rol seçin</option>
-            <option value="customer">Müşteri</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
-
+        
         {/* Email Alanı */}
         <div className="mb-4">
           <label className="block text-sm font-bold mb-2">E-posta:</label>
@@ -59,23 +39,7 @@ function Login() {
             placeholder="E-posta adresinizi girin"
           />
         </div>
-
-        {/* Müşteri Alanları */}
-        {role === "customer" && (
-          <div className="mb-4">
-            <label className="block text-sm font-bold mb-2">Ad Soyad:</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full p-2 border rounded"
-              placeholder="Adınızı ve soyadınızı girin"
-            />
-          </div>
-        )}
-
-        {/* Admin Alanları */}
-        {role === "admin" && (
+    
           <div className="mb-4">
             <label className="block text-sm font-bold mb-2">Şifre:</label>
             <input
@@ -86,7 +50,7 @@ function Login() {
               placeholder="Şifrenizi girin"
             />
           </div>
-        )}
+      
 
         {/* Giriş Butonu */}
         <button

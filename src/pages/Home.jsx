@@ -8,9 +8,9 @@ function Home() {
     <div className="text-center">
    
       <h1 className="text-3xl font-bold mb-6">Hoş Geldiniz!</h1>
-      <Link to = "/menu">
+      <Link to = "/login">
       <p className="text-blue-600 mb-4 ">
-        Enfes lezzetler sadece birkaç tık uzağınızda. Menümüzü görmek için klikleyin!
+        Enfes lezzetler sadece birkaç tık uzağınızda. Menümüzü görmek için giriş yapın!
       </p>
       <img
           src="https://static7.depositphotos.com/1035468/773/v/950/depositphotos_7734891-stock-illustration-cartoon-chef-cook.jpg"
