@@ -1,12 +1,10 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { signInWithEmailAndPassword } from "firebase/auth"; // Firebase login fonksiyonu
-import { auth } from "../config/firebase"; // Firebase config
 import toast from "react-hot-toast";
 
 function Login() {
-  const { register } = useContext(AuthContext); // AuthContext'ten register fonksiyonunu al
+  const { register, login } = useContext(AuthContext); // AuthContext'ten register ve login fonksiyonlarını al
   const [isLoginMode, setIsLoginMode] = useState(true); // Login/Register modu
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,9 +21,8 @@ function Login() {
     }
 
     try {
-      // Firebase'de kullanıcı giriş işlemi
-      await signInWithEmailAndPassword(auth, email, password);
-      toast.success("Başarıyla giriş yapıldı!");
+      // AuthContext'in login fonksiyonu çağrılır
+      await login(email, password);
       navigate("/menu"); // Menü sayfasına yönlendir
     } catch (error) {
       console.error("Giriş Hatası:", error);
@@ -42,7 +39,7 @@ function Login() {
     }
 
     try {
-      // Firebase'de kullanıcı kaydı
+      // AuthContext'in register fonksiyonu çağrılır
       await register(email, password, name);
       setIsLoginMode(true); // Login moduna geç
     } catch (error) {
