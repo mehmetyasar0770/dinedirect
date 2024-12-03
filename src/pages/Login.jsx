@@ -1,48 +1,53 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import { signInWithEmailAndPassword } from "firebase/auth"; // Firebase login fonksiyonu
+import { auth } from "../config/firebase"; // Firebase config
+import toast from "react-hot-toast";
 
 function Login() {
+  const { register } = useContext(AuthContext); // AuthContext'ten register fonksiyonunu al
   const [isLoginMode, setIsLoginMode] = useState(true); // Login/Register modu
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState(""); // Kayıt için kullanıcı adı
-  const [registeredUsers, setRegisteredUsers] = useState([]); // Kayıtlı kullanıcılar
 
   const navigate = useNavigate();
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
 
-    // Kullanıcı kayıtlı mı kontrol et
-    const userExists = registeredUsers.find(
-      (user) => user.email === email && user.password === password
-    );
+    if (!email || !password) {
+      toast.error("Lütfen e-posta ve şifre alanlarını doldurun.");
+      return;
+    }
 
-    if (userExists) {
-      alert("Başarıyla giriş yapıldı!");
-      navigate("/menu");
-    } else {
-      alert("Kullanıcı bulunamadı. Lütfen kayıt olun veya bilgilerinizi kontrol edin.");
+    try {
+      // Firebase'de kullanıcı giriş işlemi
+      await signInWithEmailAndPassword(auth, email, password);
+      toast.success("Başarıyla giriş yapıldı!");
+      navigate("/menu"); // Menü sayfasına yönlendir
+    } catch (error) {
+      console.error("Giriş Hatası:", error);
+      toast.error("Giriş işlemi başarısız. Lütfen bilgilerinizi kontrol edin.");
     }
   };
 
-  const handleRegister = (event) => {
+  const handleRegister = async (event) => {
     event.preventDefault();
 
-    // Kullanıcı zaten kayıtlı mı kontrol et
-    const userExists = registeredUsers.find((user) => user.email === email);
+    if (!email || !password || !name) {
+      toast.error("Lütfen tüm alanları doldurun.");
+      return;
+    }
 
-    if (userExists) {
-      alert("Bu e-posta ile zaten bir kullanıcı kayıtlı.");
-    } else if (email && password && name) {
-      setRegisteredUsers((prevUsers) => [
-        ...prevUsers,
-        { email, password, name },
-      ]);
-      alert("Kayıt başarıyla tamamlandı! Şimdi giriş yapabilirsiniz.");
+    try {
+      // Firebase'de kullanıcı kaydı
+      await register(email, password, name);
       setIsLoginMode(true); // Login moduna geç
-    } else {
-      alert("Lütfen tüm alanları doldurun.");
+    } catch (error) {
+      console.error("Kayıt Hatası:", error);
+      toast.error("Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.");
     }
   };
 

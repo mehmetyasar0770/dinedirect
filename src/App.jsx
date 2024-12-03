@@ -11,6 +11,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import { MenuProvider } from "./context/MenuContext";
 import MainLayout from "./layouts/MainLayout";
 import NotFound from "./pages/NotFound";
+import AuthProvider from "./context/AuthContext";
 
 function App() {
 
@@ -58,6 +59,7 @@ function App() {
     
   ])
   return (
+    <AuthProvider>
     <CartProvider> 
       <MenuProvider>
         <main className="mt-20 container mx-auto p-4">
@@ -66,6 +68,7 @@ function App() {
       </main>
       </MenuProvider>
     </CartProvider>
+    </AuthProvider>
   );
 }
 

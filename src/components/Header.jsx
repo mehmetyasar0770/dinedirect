@@ -10,7 +10,7 @@ function Header() {
       <div className="container mx-auto p-4 flex justify-between items-center">
         {/* Logo ve Slogan */}
         <div>
-          <Link to="/" className="text-2xl font-bold text-blue-500">
+          <Link to="/menu" className="text-2xl font-bold text-blue-500">
             DineDirect
           </Link>
           <div className="text-sm text-gray-500">Lezzet deneyimini klikle!</div>
