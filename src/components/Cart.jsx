@@ -1,17 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { useCart } from "../context/CartContext";
+import { useSelector, useDispatch } from "react-redux";
+import { incrementItemCount, decrementItemCount, removeItem } from "../redux/slices/cartSlice";
 
 function Cart() {
   const navigate = useNavigate(); // React Router yönlendirme hook'u
-  const {
-    cartItems,
-    handleIncreaseCount,
-    handleDecreaseCount,
-    handleRemoveItem,
-  } = useCart(); // CartContext üzerinden sepet işlemleri
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.cartItems); // Redux'tan sepet öğeleri alınır
 
   // Alt toplam hesaplama
-  const subTotal = cartItems.reduce((total, item) => total + item.price * item.count, 0);
+  const subTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
   const handleCheckout = () => {
     navigate("/checkout"); // Checkout sayfasına yönlendirme
@@ -41,23 +38,23 @@ function Cart() {
                 <div className="flex items-center space-x-4">
                   {/* Sayı Azalt */}
                   <button
-                    onClick={() => handleDecreaseCount(item.id)}
+                    onClick={() => dispatch(decrementItemCount(item.id))}
                     className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
                   >
                     -
                   </button>
                   {/* Ürün Sayısı */}
-                  <span className="text-lg font-bold">{item.count}</span>
+                  <span className="text-lg font-bold">{item.quantity}</span>
                   {/* Sayı Arttır */}
                   <button
-                    onClick={() => handleIncreaseCount(item.id)}
+                    onClick={() => dispatch(incrementItemCount(item.id))}
                     className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
                   >
                     +
                   </button>
                   {/* Ürünü Kaldır */}
                   <button
-                    onClick={() => handleRemoveItem(item.id)}
+                    onClick={() => dispatch(removeItem(item.id))}
                     className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                   >
                     Sil

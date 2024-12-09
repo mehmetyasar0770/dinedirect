@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { AppstoreOutlined, ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
-import { useCart } from "../context/CartContext";
+import { useSelector } from "react-redux";
 
 function Header() {
-  const { cartItems } = useCart(); // CartContext üzerinden sepetteki ürünler
+  const {cartItems}= useSelector((state)=> state.cart)
 
+  console.log (cartItems);
   return (
     <header className="bg-white shadow-md fixed top-0 left-0 w-full z-10">
       <div className="container mx-auto p-4 flex justify-between items-center">

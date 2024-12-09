@@ -1,17 +1,10 @@
 import Cart from "../components/Cart";
 
-
-function CartPage({ cartItems, onIncreaseCount, onDecreaseCount, onRemoveItem }) {
+function CartPage() {
   return (
     <div>
-     
       <h1 className="text-3xl font-bold text-center mb-6">Sepet</h1>
-      <Cart
-        cartItems={cartItems}
-        onIncreaseCount={onIncreaseCount}
-        onDecreaseCount={onDecreaseCount}
-        onRemoveItem={onRemoveItem}
-      />
+      <Cart />
     </div>
   );
 }
