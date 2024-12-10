@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 import { AppstoreOutlined, ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 
+
 function Header() {
   const {cartItems}= useSelector((state)=> state.cart)
-
-  console.log (cartItems);
+  const {user} = useSelector ((state)=> state.auth)
+ 
   return (
     <header className="bg-white shadow-md fixed top-0 left-0 w-full z-10">
       <div className="container mx-auto p-4 flex justify-between items-center">
@@ -19,6 +20,7 @@ function Header() {
 
         {/* Sağ Menü */}
         <div className="flex items-center space-x-6">
+          <span>Kullanıcı: {user.displayName}</span>
           <Link to="/menu">
             <AppstoreOutlined className="text-2xl text-gray-700 cursor-pointer hover:text-blue-500" />
           </Link>
@@ -33,7 +35,7 @@ function Header() {
           <Link to="/customer-orders">
             <UserOutlined className="text-2xl text-gray-700 cursor-pointer hover:text-blue-500" />
           </Link>
-          
+         
         </div>
       </div>
     </header>

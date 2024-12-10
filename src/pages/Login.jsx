@@ -2,13 +2,17 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
+import { loginUser, registerUser } from "../redux/slices/authSlice";
+import { useDispatch } from "react-redux";
 
 function Login() {
-  const { register, login } = useContext(AuthContext); // AuthContext'ten register ve login fonksiyonlarını al
+  const { register} = useContext(AuthContext); // AuthContext'ten register ve login fonksiyonlarını al
+
   const [isLoginMode, setIsLoginMode] = useState(true); // Login/Register modu
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState(""); // Kayıt için kullanıcı adı
+  const [fullName, setFullName] = useState(""); // Kayıt için kullanıcı adı
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
@@ -21,9 +25,11 @@ function Login() {
     }
 
     try {
-      // AuthContext'in login fonksiyonu çağrılır
-      await login(email, password);
+      // Redux login fonksiyonu çağrılır
+      await dispatch (loginUser({email, password}));
       navigate("/menu"); // Menü sayfasına yönlendir
+     
+      
     } catch (error) {
       console.error("Giriş Hatası:", error);
       toast.error("Giriş işlemi başarısız. Lütfen bilgilerinizi kontrol edin.");
@@ -33,14 +39,14 @@ function Login() {
   const handleRegister = async (event) => {
     event.preventDefault();
 
-    if (!email || !password || !name) {
+    if (!email || !password || !fullName) {
       toast.error("Lütfen tüm alanları doldurun.");
       return;
     }
 
     try {
       // AuthContext'in register fonksiyonu çağrılır
-      await register(email, password, name);
+      await dispatch (registerUser({email, password, fullName}));
       setIsLoginMode(true); // Login moduna geç
     } catch (error) {
       console.error("Kayıt Hatası:", error);
@@ -59,8 +65,8 @@ function Login() {
             <label className="block text-sm font-bold mb-2">Ad Soyad:</label>
             <input
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               className="w-full p-2 border rounded"
               placeholder="Adınızı ve soyadınızı girin"
             />
