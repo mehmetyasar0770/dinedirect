@@ -18,7 +18,7 @@ export const loginUser = createAsyncThunk(
         email,
         password
       );
-      console.log(userCredential);
+     
 
       toast.success(`Hoş geldiniz, ${userCredential.user.displayName}!`);
       return userCredential.user.providerData[0];

@@ -1,12 +1,11 @@
-import { useContext, useState } from "react";
+import {  useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { loginUser, registerUser } from "../redux/slices/authSlice";
 import { useDispatch } from "react-redux";
 
 function Login() {
-  const { register} = useContext(AuthContext); // AuthContext'ten register ve login fonksiyonlarını al
+  
 
   const [isLoginMode, setIsLoginMode] = useState(true); // Login/Register modu
   const [email, setEmail] = useState("");
