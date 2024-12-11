@@ -48,13 +48,13 @@ function Header() {
           <Link to="/customer-orders">
             <UserOutlined className="text-2xl text-gray-700 cursor-pointer hover:text-blue-500" />
           </Link>
-          {user && <span>{`Hoşgeldiniz, ${toPascalCase(user.displayName)}`}</span>}
+          {user && <span className="text-l text-blue-500">{`Hoşgeldiniz, ${toPascalCase(user.displayName)}`}</span>}
 
           {user && (
             <ExportOutlined
               onClick={handleLogout}
               className="text-2xl text-gray-700 cursor-pointer hover:text-blue-500"
-              title="Çıkış Yap" // Kullanıcı dostu bir açıklama eklenir
+              title="Çıkış Yap" 
             />
           )}
         </div>
