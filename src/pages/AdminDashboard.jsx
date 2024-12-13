@@ -1,16 +1,21 @@
 import { Tabs, Input, Select, Button, Table, Form } from "antd";
-import { useState } from "react";
-import { useMenu } from "../context/MenuContext";
-
+import { useState, useEffect } from "react";
+import { getProducts, addProduct } from "../services/productService"; // Import the product service
+import toast from "react-hot-toast";
 
 const { TabPane } = Tabs;
 
 function AdminDashboard() {
-  const { products, addProduct } = useMenu(); // MenuContext'ten ürünleri al ve yeni ürün ekleme fonksiyonu
+  const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([
-    ...new Set(products.map((item) => item.category)),
-  ]);
-
+    "Pizza",
+    "Burger",
+    "Sandviç",
+    "Döner",
+    "Salata",
+    "Kumpir",
+    "İçecek",
+  ]); // Initial hardcoded categories
   const [activeOrders, setActiveOrders] = useState([
     {
       id: 1,
@@ -36,38 +41,52 @@ function AdminDashboard() {
 
   const [form] = Form.useForm();
 
-  // Yeni kategori ekle
-  const handleAddCategory = (values) => {
-    const newCategory = values.category.trim(); // Kategori adını al ve boşlukları temizle
-    if (newCategory === "") {
-      alert("Kategori adı boş olamaz!");
-      return;
-    }
-  
-    // Mevcut kategorilerle kontrol
-    if (categories.includes(newCategory)) {
-      alert("Bu kategori zaten mevcut!");
-      return;
-    }
-  
-    // Yeni kategoriyi listeye ekle
-    setCategories((prevCategories) => [...prevCategories, newCategory]);
-    form.resetFields(); // Formu sıfırla
-  };
-  
-
-  // Yeni ürün ekle
-  const handleAddProduct = (values) => {
-    const newProduct = {
-      ...values,
-      id: Math.random().toString(36).substr(2, 9), // Rastgele id
-      imageURL: values.imageURL || "https://via.placeholder.com/150", // Varsayılan görsel
+  // Fetch products on component mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const fetchedProducts = await getProducts();
+      setProducts(fetchedProducts);
     };
-    addProduct(newProduct); // Ürünü merkezi duruma ekle
+    fetchProducts();
+  }, []);
+
+  // Add new category
+  const handleAddCategory = (values) => {
+    const newCategory = values.category.trim(); // Clean up the category name
+    if (newCategory === "") {
+      toast.error("Kategori adı boş olamaz!");
+      return;
+    }
+
+    if (categories.includes(newCategory)) {
+      toast.error("Bu kategori zaten mevcut!");
+      return;
+    }
+
+    setCategories((prevCategories) => [...prevCategories, newCategory]);
+    toast.success("Kategori başarıyla eklendi!");
     form.resetFields();
   };
 
-  // Sipariş durumunu güncelle
+  // Add new product using productService
+  const handleAddProduct = async (values) => {
+    const newProduct = {
+      ...values,
+      imageURL: values.imageURL || "https://via.placeholder.com/150", // Default image if not provided
+      createAt: new Date(), // Add creation timestamp
+    };
+
+    try {
+      const addedProduct = await addProduct(newProduct);
+      setProducts((prevProducts) => [...prevProducts, addedProduct]);
+      toast.success("Ürün başarıyla eklendi!");
+      form.resetFields();
+    } catch (error) {
+      console.error("Ürün ekleme hatası:", error);
+    }
+  };
+
+  // Update order status
   const handleUpdateOrderStatus = (id, newStatus) => {
     setActiveOrders((prevOrders) =>
       prevOrders.map((order) =>
@@ -76,7 +95,7 @@ function AdminDashboard() {
     );
   };
 
-  // Sipariş durumları için tablo kolonları
+  // Columns for the order status table
   const orderColumns = [
     {
       title: "Müşteri",
@@ -110,92 +129,89 @@ function AdminDashboard() {
   ];
 
   return (
-    <>
-   
-      <div className="container mx-auto p-6">
-        <h2 className="text-3xl font-bold mb-6">Admin Dashboard</h2>
-        <Tabs defaultActiveKey="1" className="bg-white shadow-lg rounded-lg p-4">
-          {/* Kategori Ekle */}
-          <TabPane tab="Kategori Ekle" key="1">
-            <Form form={form} onFinish={handleAddCategory} layout="vertical">
-              <Form.Item
-                label="Kategori Adı"
-                name="category"
-                rules={[{ required: true, message: "Kategori adı gerekli!" }]}
-              >
-                <Input placeholder="Kategori adı girin" />
-              </Form.Item>
-              <Button type="primary" htmlType="submit" className="w-full">
-                Kategori Ekle
-              </Button>
-            </Form>
-          </TabPane>
+    <div className="container mx-auto p-6">
+      <h2 className="text-3xl font-bold mb-6">Admin Dashboard</h2>
+      <Tabs defaultActiveKey="1" className="bg-white shadow-lg rounded-lg p-4">
+        {/* Add Category */}
+        <TabPane tab="Kategori Ekle" key="1">
+          <Form form={form} onFinish={handleAddCategory} layout="vertical">
+            <Form.Item
+              label="Kategori Adı"
+              name="category"
+              rules={[{ required: true, message: "Kategori adı gerekli!" }]}
+            >
+              <Input placeholder="Kategori adı girin" />
+            </Form.Item>
+            <Button type="primary" htmlType="submit" className="w-full">
+              Kategori Ekle
+            </Button>
+          </Form>
+        </TabPane>
 
-          {/* Ürün Ekle */}
-          <TabPane tab="Ürün Ekle" key="2">
-            <Form form={form} onFinish={handleAddProduct} layout="vertical">
-              <Form.Item
-                label="Ürün Adı"
-                name="name"
-                rules={[{ required: true, message: "Ürün adı gerekli!" }]}
-              >
-                <Input placeholder="Ürün adı girin" />
-              </Form.Item>
-              <Form.Item
-                label="Ürün Açıklaması"
-                name="description"
-                rules={[{ required: true, message: "Ürün açıklaması gerekli!" }]}
-              >
-                <Input.TextArea placeholder="Ürün açıklaması girin" />
-              </Form.Item>
-              <Form.Item
-                label="Fiyat"
-                name="price"
-                rules={[{ required: true, message: "Fiyat gerekli!" }]}
-              >
-                <Input type="number" placeholder="Fiyat girin" />
-              </Form.Item>
-              <Form.Item
-                label="Kategori"
-                name="category"
-                rules={[{ required: true, message: "Kategori seçimi gerekli!" }]}
-              >
-                <Select placeholder="Kategori seçin">
-                  {categories.map((category) => (
-                    <Select.Option key={category} value={category}>
-                      {category}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                label="Görsel URL"
-                name="imageURL"
-                rules={[
-                  { required: false },
-                  { type: "url", message: "Geçerli bir URL girin!" },
-                ]}
-              >
-                <Input placeholder="Ürün görsel URL'si girin (opsiyonel)" />
-              </Form.Item>
-              <Button type="primary" htmlType="submit" className="w-full">
-                Ürün Ekle
-              </Button>
-            </Form>
-          </TabPane>
+        {/* Add Product */}
+        <TabPane tab="Ürün Ekle" key="2">
+          <Form form={form} onFinish={handleAddProduct} layout="vertical">
+            <Form.Item
+              label="Ürün Adı"
+              name="name"
+              rules={[{ required: true, message: "Ürün adı gerekli!" }]}
+            >
+              <Input placeholder="Ürün adı girin" />
+            </Form.Item>
+            <Form.Item
+              label="Ürün Açıklaması"
+              name="description"
+              rules={[{ required: true, message: "Ürün açıklaması gerekli!" }]}
+            >
+              <Input.TextArea placeholder="Ürün açıklaması girin" />
+            </Form.Item>
+            <Form.Item
+              label="Fiyat"
+              name="price"
+              rules={[{ required: true, message: "Fiyat gerekli!" }]}
+            >
+              <Input type="number" placeholder="Fiyat girin" />
+            </Form.Item>
+            <Form.Item
+              label="Kategori"
+              name="category"
+              rules={[{ required: true, message: "Kategori seçimi gerekli!" }]}
+            >
+              <Select placeholder="Kategori seçin">
+                {categories.map((category) => (
+                  <Select.Option key={category} value={category}>
+                    {category}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label="Görsel URL"
+              name="imageURL"
+              rules={[
+                { required: false },
+                { type: "url", message: "Geçerli bir URL girin!" },
+              ]}
+            >
+              <Input placeholder="Ürün görsel URL'si girin (opsiyonel)" />
+            </Form.Item>
+            <Button type="primary" htmlType="submit" className="w-full">
+              Ürün Ekle
+            </Button>
+          </Form>
+        </TabPane>
 
-          {/* Sipariş Durumu Güncelle */}
-          <TabPane tab="Sipariş Durumu Güncelle" key="3">
-            <Table
-              dataSource={activeOrders}
-              columns={orderColumns}
-              rowKey="id"
-              pagination={false}
-            />
-          </TabPane>
-        </Tabs>
-      </div>
-    </>
+        {/* Update Order Status */}
+        <TabPane tab="Sipariş Durumu Güncelle" key="3">
+          <Table
+            dataSource={activeOrders}
+            columns={orderColumns}
+            rowKey="id"
+            pagination={false}
+          />
+        </TabPane>
+      </Tabs>
+    </div>
   );
 }
 
