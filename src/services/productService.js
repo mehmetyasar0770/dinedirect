@@ -23,7 +23,7 @@ import {
   
   export const getProducts = async () => {
     try {
-      const q = query(collection(db, 'products'), orderBy('createAt', 'desc'));
+      const q = query(collection(db, 'products'), orderBy('createAt', 'asc'));
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map((doc) => ({ 
         id: doc.id,

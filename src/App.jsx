@@ -8,7 +8,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./config/firebase";
 import mainRoutes from "./routes/MainRoutes";
 import adminRoutes from "./routes/AdminRoutes";
-import { MenuProvider } from "./context/MenuContext";
+
 
 function App() {
   const dispatch = useDispatch();
@@ -30,12 +30,12 @@ function App() {
   const router = createBrowserRouter([...mainRoutes, ...adminRoutes]);
 
   return (
-    <MenuProvider>
+   
       <main className="mt-20 container mx-auto p-4">
         <Toaster />
         <RouterProvider router={router} />
       </main>
-    </MenuProvider>
+ 
   );
 }
 
