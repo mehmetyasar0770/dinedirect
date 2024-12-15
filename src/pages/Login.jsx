@@ -42,11 +42,12 @@ function Login() {
     }
   
     try {
-      // Redux register fonksiyonunu çağır ve unwrap kullanarak sonucu bekle
-      await dispatch(registerUser({ email, password, fullName })).unwrap();
+      // Redux register fonksiyonunu çağır ve unwrap ile sonucu al
+      const result = await dispatch(registerUser({ email, password, fullName }));
+      console.log("Register Success:", result);
       setIsLoginMode(true); // Login moduna geç
     } catch (error) {
-      console.error("Kayıt Hatası:", error);
+      console.error("Register Error:", error);
       toast.error("Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.");
     }
   };
