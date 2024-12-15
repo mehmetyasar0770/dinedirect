@@ -17,41 +17,40 @@ function Login() {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-
+  
     if (!email || !password) {
       toast.error("Lütfen e-posta ve şifre alanlarını doldurun.");
       return;
     }
-
+  
     try {
-      // Redux login fonksiyonu çağrılır
-      await dispatch (loginUser({email, password}));
+      // Redux login fonksiyonunu çağır ve unwrap kullanarak sonucu bekle
+      await dispatch(loginUser({ email, password })).unwrap();
       navigate("/menu"); // Menü sayfasına yönlendir
-     
-      
     } catch (error) {
       console.error("Giriş Hatası:", error);
       toast.error("Giriş işlemi başarısız. Lütfen bilgilerinizi kontrol edin.");
     }
   };
-
+  
   const handleRegister = async (event) => {
     event.preventDefault();
-
+  
     if (!email || !password || !fullName) {
       toast.error("Lütfen tüm alanları doldurun.");
       return;
     }
-
+  
     try {
-      // AuthContext'in register fonksiyonu çağrılır
-      await dispatch (registerUser({email, password, fullName}));
+      // Redux register fonksiyonunu çağır ve unwrap kullanarak sonucu bekle
+      await dispatch(registerUser({ email, password, fullName })).unwrap();
       setIsLoginMode(true); // Login moduna geç
     } catch (error) {
       console.error("Kayıt Hatası:", error);
       toast.error("Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.");
     }
   };
+  
 
   return (
     <div className="container mx-auto p-4">

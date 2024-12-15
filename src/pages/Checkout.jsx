@@ -138,7 +138,7 @@ function Checkout() {
           <p className="text-gray-600 text-center">
             Siparişiniz başarıyla alındı. Teşekkür ederiz!
           </p>
-          <Link to="/login">
+          <Link to="/customer-orders">
             <p className="text-blue-600 text-center">
               Müşteri girişinden e-mail ve şifrenizle giriş yaparak sipariş
               durumunuzu izleyebilirsiniz
