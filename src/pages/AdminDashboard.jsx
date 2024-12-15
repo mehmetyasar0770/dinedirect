@@ -1,21 +1,14 @@
 import { Tabs, Input, Select, Button, Table, Form } from "antd";
 import { useState, useEffect } from "react";
-import { getProducts, addProduct } from "../services/productService"; // Import the product service
+import { getProducts, addProduct } from "../services/productService"; // Product service
+import { getCategories, addCategory } from "../services/categoryService"; // Category service
 import toast from "react-hot-toast";
 
 const { TabPane } = Tabs;
 
 function AdminDashboard() {
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([
-    "Pizza",
-    "Burger",
-    "Sandviç",
-    "Döner",
-    "Salata",
-    "Kumpir",
-    "İçecek",
-  ]); // Initial hardcoded categories
+  const [categories, setCategories] = useState([]); // Categories from Firestore
   const [activeOrders, setActiveOrders] = useState([
     {
       id: 1,
@@ -41,17 +34,21 @@ function AdminDashboard() {
 
   const [form] = Form.useForm();
 
-  // Fetch products on component mount
+  // Fetch products and categories on component mount
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProductsAndCategories = async () => {
       const fetchedProducts = await getProducts();
       setProducts(fetchedProducts);
+
+      const fetchedCategories = await getCategories();
+      setCategories(fetchedCategories.map((cat) => cat.name)); // Extract category names
     };
-    fetchProducts();
+
+    fetchProductsAndCategories();
   }, []);
 
-  // Add new category
-  const handleAddCategory = (values) => {
+  // Add new category using Firestore
+  const handleAddCategory = async (values) => {
     const newCategory = values.category.trim(); // Clean up the category name
     if (newCategory === "") {
       toast.error("Kategori adı boş olamaz!");
@@ -63,12 +60,17 @@ function AdminDashboard() {
       return;
     }
 
-    setCategories((prevCategories) => [...prevCategories, newCategory]);
-    toast.success("Kategori başarıyla eklendi!");
-    form.resetFields();
+    try {
+      await addCategory({ name: newCategory, createAt: new Date() }); // Save category to Firestore
+      setCategories((prevCategories) => [...prevCategories, newCategory]); // Update local state
+      toast.success("Kategori başarıyla eklendi!");
+      form.resetFields();
+    } catch (error) {
+      console.error("Kategori ekleme hatası:", error);
+    }
   };
 
-  // Add new product using productService
+  // Add new product using Firestore
   const handleAddProduct = async (values) => {
     const newProduct = {
       ...values,

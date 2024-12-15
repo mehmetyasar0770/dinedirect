@@ -1,17 +1,20 @@
-import { useState } from "react";
-import { useMenu } from "../context/MenuContext";
-import MenuItem from "./MenuItem";
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import MenuItem from './MenuItem';
 
 function MenuList() {
-  const { products } = useMenu(); // MenuContext üzerinden ürünleri al
-  const [activeCategory, setActiveCategory] = useState("Tümü"); // Varsayılan kategori
+  const { products, loading, error } = useSelector((state) => state.menu); // Redux üzerinden ürünleri al
+  const [activeCategory, setActiveCategory] = useState('Tümü'); // Varsayılan kategori
+
+  if (loading) return <p>Ürünler yükleniyor...</p>;
+  if (error) return <p>Bir hata oluştu: {error}</p>;
 
   // Kategorileri dinamik olarak oluştur
-  const categories = ["Tümü", ...new Set(products.map((item) => item.category))];
+  const categories = ['Tümü', ...new Set(products.map((item) => item.category))];
 
   // Seçili kategoriye göre ürünleri filtrele
   const filteredMenu =
-    activeCategory === "Tümü"
+    activeCategory === 'Tümü'
       ? products
       : products.filter((item) => item.category === activeCategory);
 
@@ -24,8 +27,8 @@ function MenuList() {
             key={category}
             className={`px-4 py-2 rounded ${
               activeCategory === category
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-700"
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-200 text-gray-700'
             }`}
             onClick={() => setActiveCategory(category)} // Kategori değiştir
           >

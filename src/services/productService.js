@@ -14,10 +14,9 @@ import {
         ...productData,
       });
   
-      toast.success('Ürün başarıyla eklendi.');
+     
       return { id: docRef.id, ...productData };
     } catch (error) {
-      toast.error('Ürün eklenirken hata oluştu!');
       console.log(error);
     }
   };
