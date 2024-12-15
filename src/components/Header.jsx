@@ -74,12 +74,17 @@ function Header() {
             <AppstoreOutlined onClick={handleMenuClick} className="text-2xl text-gray-700 cursor-pointer hover:text-blue-500" />
           
           
-            <ShoppingCartOutlined onClick={handleCartClick}  className="text-2xl text-gray-700 cursor-pointer hover:text-blue-500" />
+            <div className="relative">
+            <ShoppingCartOutlined
+              onClick={handleCartClick}
+              className="text-2xl text-gray-700 cursor-pointer hover:text-blue-500"
+            />
             {cartItems.length > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
                 {cartItems.length}
               </span>
             )}
+          </div>
           
           <UserOutlined
             onClick={handleUserIconClick} // İkona tıklanma olayını bağla
