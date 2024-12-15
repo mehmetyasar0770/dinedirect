@@ -1,10 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux"; // Redux'tan useDispatch import
+import { clearCart } from "../redux/slices/cartSlice"; // clearCart reducer'ını import
 
 function Checkout() {
   const [step, setStep] = useState(1); // Adımları kontrol eden durum
+  const dispatch = useDispatch(); // Redux dispatch
 
-  const handleNextStep = () => setStep((prev) => prev + 1);
+  const handleNextStep = () => {
+    if (step === 2) {
+      dispatch(clearCart()); // 2. adımdan sonra sepeti temizle
+    }
+    setStep((prev) => prev + 1);
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -61,7 +69,7 @@ function Checkout() {
                   Servis İsteği Seçin
                 </option>
                 <option value="Servis (Plastik çatal, kaşık ve baharat) İstemiyorum">
-                  Servis İstemiyorum (Plastik çatal, kaşık ve baharat). 
+                  Servis İstemiyorum (Plastik çatal, kaşık ve baharat).
                 </option>
                 <option value="Servis İstiyorum (Plastik çatal, kaşık ve baharat)">
                   Servis İstiyorum (Plastik çatal, kaşık ve baharat).

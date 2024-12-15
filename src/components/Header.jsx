@@ -2,6 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { AppstoreOutlined, ShoppingCartOutlined, UserOutlined, ExportOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../redux/slices/authSlice";
+import { clearCart } from "../redux/slices/cartSlice";
+
 
 function Header() {
   const { cartItems } = useSelector((state) => state.cart);
@@ -11,6 +13,7 @@ function Header() {
 
   const handleLogout = () => {
     dispatch(logoutUser());
+    dispatch (clearCart());
     navigate("/"); // Logout sonrası ana sayfaya yönlendir
   };
 
