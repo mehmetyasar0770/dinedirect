@@ -7,7 +7,7 @@ import {
 } from 'firebase/auth';
 import { auth, db} from '../../config/firebase';
 import toast from 'react-hot-toast';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 export const loginUser = createAsyncThunk(
   'auth/login',
@@ -18,10 +18,19 @@ export const loginUser = createAsyncThunk(
         email,
         password
       );
-     
 
-      toast.success(`Hoş geldiniz, ${userCredential.user.displayName}!`);
-      return userCredential.user.providerData[0];
+      // Get complete user data from Firestore
+      const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+      const userData = {
+        uid: userCredential.user.uid,
+        email: userDoc.data().email,
+        displayName: userDoc.data().fullName,
+        role: userDoc.data().role
+      };
+
+      toast.success(`Hoş geldiniz, ${userData.displayName}!`);
+      return userData;
+      
     } catch (error) {
       toast.error(error.message);
       return rejectWithValue(error.message);
@@ -33,24 +42,34 @@ export const registerUser = createAsyncThunk(
   'auth/register',
   async ({ email, password, fullName }, { rejectWithValue }) => {
     try {
+      // Create user with email/password
       const userCredential = await createUserWithEmailAndPassword(
-        auth,
+        auth, 
         email,
         password
       );
 
-      await updateProfile(userCredential.user, {
-        displayName: fullName,
-      });
-
+      // Store user data including fullName in Firestore
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         role: 'user',
         email,
         fullName,
+        displayName: fullName,
+        uid: userCredential.user.uid
       });
 
-      toast.success(`Hesabınız başarıyla oluşturuldu, ${fullName}!`);
-      return userCredential.user.providerData[0];
+      // Get user data from Firestore to ensure we use stored data
+      const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+      const userData = {
+        uid: userCredential.user.uid,
+        email: userDoc.data().email,
+        displayName: userDoc.data().fullName, // Get display name from Firestore
+        role: userDoc.data().role
+      };
+
+      toast.success(`Hesabınız başarıyla oluşturuldu, ${userData.displayName}!`);
+      return userData;
+
     } catch (error) {
       toast.error(error.message);
       return rejectWithValue(error.message);
