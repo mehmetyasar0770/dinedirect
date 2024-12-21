@@ -51,12 +51,19 @@ function Header() {
   };
 
   function toPascalCase(name) {
+    if (!name || typeof name !== "string") {
+      return ""; // Geçersiz giriş durumunda boş bir string döndür
+    }
+  
     return name
       .split(" ") // İsim ve soyismi boşluklardan ayır
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Her kelimenin ilk harfini büyük, diğerlerini küçük yap
+      .map(
+        (word) =>
+          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() // Her kelimenin ilk harfini büyük, diğerlerini küçük yap
+      )
       .join(" "); // Kelimeleri birleştir
   }
-
+  
   return (
     <header className="bg-white shadow-md fixed top-0 left-0 w-full z-10">
       <div className="container mx-auto p-4 flex justify-between items-center">
