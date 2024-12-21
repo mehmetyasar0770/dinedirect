@@ -1,9 +1,14 @@
-import { Tabs, Input, Select, Button, Table, Form } from "antd";
+import { Tabs, Input, Select, Button, Table, Form, DatePicker } from "antd";
 import { useState, useEffect } from "react";
 import { getProducts, addProduct } from "../services/productService"; // Product service
 import { getCategories, addCategory } from "../services/categoryService"; // Category service
 import toast from "react-hot-toast";
-
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addPromoCode,
+  getPromoCodes,
+  updatePromoCode,
+} from "../redux/slices/promoCodeSlice";
 const { TabPane } = Tabs;
 
 function AdminDashboard() {
@@ -130,6 +135,73 @@ function AdminDashboard() {
     },
   ];
 
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getPromoCodes());
+  }, [dispatch]);
+
+  const { promoCodes, loading } = useSelector((state) => state.promoCodes);
+
+  const [promoForm] = Form.useForm();
+  const handleAddPromoCode = async (values) => {
+    const promoCodeData = {
+      ...values,
+      validFrom: values.validFrom.toISOString(),
+      validUntil: values.validUntil.toISOString(),
+      discount: parseFloat(values.discount),
+    };
+    console.log("Eklenecek veri:", promoCodeData); 
+    try {
+      await dispatch(addPromoCode(promoCodeData)).unwrap();
+      toast.success("Promosyon kodu başarıyla eklendi!");
+      form.resetFields();
+    } catch (error) {
+      console.error("Promosyon kodu eklenemedi:", error);
+      toast.error("Promosyon kodu eklenemedi.");
+    }
+  };
+  
+
+
+  const promoCodeColumns = [
+    {
+      title: "Kod",
+      dataIndex: "code",
+      key: "code",
+    },
+    {
+      title: "İndirim Yüzdesi",
+      dataIndex: "discount",
+      key: "discount",
+      render: (value) => `${value}%`,
+    },
+    {
+      title: "Geçerlilik Tarihi",
+      dataIndex: "validUntil",
+      key: "validUntil",
+      render: (value) => new Date(value).toLocaleDateString(),
+    },
+    {
+      title: "Durum",
+      dataIndex: "status",
+      key: "status",
+      render: (status, record) => (
+        <Select
+          value={status}
+          onChange={(value) =>
+            dispatch(
+              updatePromoCode({ id: record.id, updates: { status: value } })
+            )
+          }
+          className="w-full"
+        >
+          <Select.Option value="active">Aktif</Select.Option>
+          <Select.Option value="passive">Pasif</Select.Option>
+        </Select>
+      ),
+    },
+  ];
+
   return (
     <div className="container mx-auto p-6">
       <h2 className="text-3xl font-bold mb-6">Admin Dashboard</h2>
@@ -210,6 +282,72 @@ function AdminDashboard() {
             columns={orderColumns}
             rowKey="id"
             pagination={false}
+          />
+        </TabPane>
+
+        <TabPane tab="Promosyon Kodları" key="4">
+          <Form form={promoForm}   onFinish={(values) => {
+    console.log("Form gönderildi:", values); // Bu log tetikleniyor mu?
+    handleAddPromoCode(values);
+  }} layout="vertical">
+            <Form.Item
+              label="Promosyon Kodu"
+              name="code"
+              rules={[{ required: true, message: "Promosyon kodu gerekli!" }]}
+            >
+              <Input placeholder="Promosyon kodu girin" />
+            </Form.Item>
+            <Form.Item
+              label="İndirim Yüzdesi"
+              name="discount"
+              rules={[{ required: true, message: "İndirim yüzdesi gerekli!" }]}
+            >
+              <Input type="number" placeholder="İndirim yüzdesi girin" />
+            </Form.Item>
+            <Form.Item
+              label="Geçerlilik Başlangıç Tarihi"
+              name="validFrom"
+              rules={[
+                {
+                  required: true,
+                  message: "Geçerlilik başlangıç tarihi gerekli!",
+                },
+              ]}
+            >
+              <DatePicker
+                placeholder="Başlangıç tarihi seçin"
+                className="w-full"
+              />
+            </Form.Item>
+            <Form.Item
+              label="Geçerlilik Bitiş Tarihi"
+              name="validUntil"
+              rules={[
+                { required: true, message: "Geçerlilik bitiş tarihi gerekli!" },
+              ]}
+            >
+              <DatePicker placeholder="Bitiş tarihi seçin" className="w-full" />
+            </Form.Item>
+            <Form.Item
+              label="Durum"
+              name="status"
+              rules={[{ required: true, message: "Durum seçimi gerekli!" }]}
+            >
+              <Select placeholder="Durum seçin">
+                <Select.Option value="active">Aktif</Select.Option>
+                <Select.Option value="passive">Pasif</Select.Option>
+              </Select>
+            </Form.Item>
+            <Button type="primary" htmlType="submit" className="w-full">
+  Promosyon Kodu Ekle
+</Button>
+          </Form>
+
+          <Table
+            dataSource={promoCodes}
+            columns={promoCodeColumns}
+            rowKey="id"
+            loading={loading}
           />
         </TabPane>
       </Tabs>

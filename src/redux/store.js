@@ -3,6 +3,7 @@ import cartReducer from "./slices/cartSlice";
 import authReducer from "./slices/authSlice";
 import roleReducer from "./slices/roleSlice";
 import menuReducer from './slices/menuSlice';
+import promoCodeReducer from './slices/promoCodeSlice';
 
 const store = configureStore({
     reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
         auth:authReducer,
         role:roleReducer,
         menu:menuReducer,
+        promoCodes: promoCodeReducer,
     }
 })
 
