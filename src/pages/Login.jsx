@@ -1,58 +1,67 @@
-import {  useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { loginUser, registerUser } from "../redux/slices/authSlice";
 import { useDispatch } from "react-redux";
+import InfoModal from "../components/InfoModal";
 
 function Login() {
-  
-
   const [isLoginMode, setIsLoginMode] = useState(true); // Login/Register modu
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState(""); // Kayıt için kullanıcı adı
+  const [showModal, setShowModal] = useState(false); // Modal görünürlüğü
   const dispatch = useDispatch();
-
   const navigate = useNavigate();
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    localStorage.setItem("promoModalShown", "true"); // Modal'ın gösterildiğini işaretle
+    navigate("/menu"); // Menü sayfasına yönlendir
+  };
 
   const handleLogin = async (event) => {
     event.preventDefault();
-  
+
     if (!email || !password) {
       toast.error("Lütfen e-posta ve şifre alanlarını doldurun.");
       return;
     }
-  
+
     try {
       // Redux login fonksiyonunu çağır ve unwrap kullanarak sonucu bekle
       await dispatch(loginUser({ email, password })).unwrap();
-      navigate("/menu"); // Menü sayfasına yönlendir
+
+      // Kullanıcının modalı görüp görmediğini kontrol et
+      const promoModalShown = localStorage.getItem("promoModalShown");
+      if (!promoModalShown) {
+        setShowModal(true); // Modal'ı göster
+      } else {
+        navigate("/menu"); // Menü sayfasına yönlendir
+      }
     } catch (error) {
       console.error("Giriş Hatası:", error);
       toast.error("Giriş işlemi başarısız. Lütfen bilgilerinizi kontrol edin.");
     }
   };
-  
+
   const handleRegister = async (event) => {
     event.preventDefault();
-  
+
     if (!email || !password || !fullName) {
       toast.error("Lütfen tüm alanları doldurun.");
       return;
     }
-  
+
     try {
       // Redux register fonksiyonunu çağır ve unwrap ile sonucu al
-      const result = await dispatch(registerUser({ email, password, fullName })).unwrap();
-      console.log("Register Success:", result);
+      await dispatch(registerUser({ email, password, fullName })).unwrap();
       setIsLoginMode(true); // Login moduna geç
     } catch (error) {
       console.error("Register Error:", error);
       toast.error("Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.");
     }
   };
-  
-  
 
   return (
     <div className="container mx-auto p-4">
@@ -126,6 +135,9 @@ function Login() {
           </p>
         )}
       </div>
+
+      {/* Info Modal */}
+      <InfoModal isVisible={showModal} onClose={handleModalClose} />
     </div>
   );
 }
