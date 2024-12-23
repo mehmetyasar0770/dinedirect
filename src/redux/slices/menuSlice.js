@@ -1,10 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getProducts } from '../../services/productService'; // Firestore'dan ürün çekme fonksiyonu
 
+// Serileştirilemeyen alanları temizlemek için yardımcı fonksiyon
+const sanitizeProduct = (product) => ({
+  ...product,
+  createAt: product.createAt?.toISOString?.() || null, // createAt varsa, ISO string formatına çevir
+});
+
 // AsyncThunk ile ürünleri Firestore'dan al
 export const fetchProducts = createAsyncThunk('menu/fetchProducts', async () => {
   const products = await getProducts();
-  return products;
+  return products.map(sanitizeProduct); // Ürünleri sanitize ederek döndür
 });
 
 const menuSlice = createSlice({
@@ -17,7 +23,8 @@ const menuSlice = createSlice({
   reducers: {
     // Yeni ürün ekleme
     addProduct: (state, action) => {
-      state.products.push(action.payload);
+      const sanitizedProduct = sanitizeProduct(action.payload); // Ürünü sanitize et
+      state.products.push(sanitizedProduct);
     },
   },
   extraReducers: (builder) => {
@@ -28,7 +35,7 @@ const menuSlice = createSlice({
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.products = action.payload;
+        state.products = action.payload; // Zaten sanitize edilmiş veriler
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;

@@ -8,6 +8,7 @@ import {
 import { useEffect, useState } from "react";
 import { useSelector as usePromoSelector } from "react-redux";
 import { getPromoCodes } from "../redux/slices/promoCodeSlice";
+import { saveOrder } from "../redux/slices/orderSlice";
 
 function Cart() {
   const navigate = useNavigate();
@@ -60,8 +61,18 @@ function Cart() {
   
 
   const handleCheckout = () => {
+    const checkoutData = {
+      cartItems,
+      total: discountedTotal,
+      appliedPromo,
+    };
+  
+    // Redux store'a checkout verilerini ekle
+    dispatch(saveOrder(checkoutData));
+  
     navigate("/checkout");
   };
+  
 
   return (
     <div className="container mx-auto p-4">

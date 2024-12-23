@@ -1,5 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+// Serileştirilemeyen alanları kaldıran yardımcı fonksiyon
+const sanitizeCartItem = (item) => ({
+  ...item,
+  createAt: item.createAt?.toISOString?.() || null, // createAt varsa, ISO string formatına çevir
+});
+
 const cartSlice = createSlice({
   name: "cart",
   initialState: {
@@ -7,11 +13,14 @@ const cartSlice = createSlice({
   },
   reducers: {
     addToCart: (state, { payload: item }) => {
-      const existingItem = state.cartItems.find((cItem) => cItem.id === item.id);
+      const sanitizedItem = sanitizeCartItem(item);
+      const existingItem = state.cartItems.find(
+        (cItem) => cItem.id === sanitizedItem.id
+      );
 
       if (existingItem) {
         state.cartItems = state.cartItems.map((cItem) => {
-          if (cItem.id === item.id) {
+          if (cItem.id === sanitizedItem.id) {
             return { ...cItem, quantity: cItem.quantity + 1 };
           }
           return cItem;
@@ -19,7 +28,7 @@ const cartSlice = createSlice({
         return;
       }
 
-      state.cartItems = [...state.cartItems, { ...item, quantity: 1 }];
+      state.cartItems = [...state.cartItems, { ...sanitizedItem, quantity: 1 }];
     },
     incrementItemCount: (state, { payload: id }) => {
       state.cartItems = state.cartItems.map((item) =>

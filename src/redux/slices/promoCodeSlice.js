@@ -3,25 +3,33 @@ import { collection, addDoc, getDocs, updateDoc, doc } from 'firebase/firestore'
 import { db } from '../../config/firebase';
 import toast from 'react-hot-toast';
 
+// Serileştirme ve `Date` dönüştürme için yardımcı fonksiyonlar
+const sanitizePromoCodeForFirestore = (promoCode) => ({
+  ...promoCode,
+  ...(promoCode.validFrom && { validFrom: new Date(promoCode.validFrom).toISOString() }),
+  ...(promoCode.validUntil && { validUntil: new Date(promoCode.validUntil).toISOString() }),
+});
+
+const sanitizePromoCodeForRedux = (promoCode) => ({
+  ...promoCode,
+  ...(promoCode.validFrom && { validFrom: new Date(promoCode.validFrom) }),
+  ...(promoCode.validUntil && { validUntil: new Date(promoCode.validUntil) }),
+});
+
 // Promosyon kodu ekleme
 export const addPromoCode = createAsyncThunk(
-    "promoCodes/addPromoCode",
-    async (promoCode, { rejectWithValue }) => {
-      try {
-        const promoCodeData = {
-          ...promoCode,
-          validFrom: new Date(promoCode.validFrom).toISOString(),
-          validUntil: new Date(promoCode.validUntil).toISOString(),
-        };
-        const docRef = await addDoc(collection(db, "promoCodes"), promoCodeData);
-        return { id: docRef.id, ...promoCodeData };
-      } catch (error) {
-        console.error("Firestore hata:", error);
-        return rejectWithValue(error.message);
-      }
+  'promoCodes/addPromoCode',
+  async (promoCode, { rejectWithValue }) => {
+    try {
+      const sanitizedPromoCode = sanitizePromoCodeForFirestore(promoCode);
+      const docRef = await addDoc(collection(db, 'promoCodes'), sanitizedPromoCode);
+      return { id: docRef.id, ...sanitizedPromoCode };
+    } catch (error) {
+      console.error('Firestore hata:', error);
+      return rejectWithValue(error.message);
     }
-  );
-  
+  }
+);
 
 // Tüm promosyon kodlarını alma
 export const getPromoCodes = createAsyncThunk(
@@ -29,12 +37,12 @@ export const getPromoCodes = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const querySnapshot = await getDocs(collection(db, 'promoCodes'));
-      const promoCodes = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        validFrom: new Date(doc.data().validFrom),
-        validUntil: new Date(doc.data().validUntil),
-      }));
+      const promoCodes = querySnapshot.docs.map((doc) =>
+        sanitizePromoCodeForRedux({
+          id: doc.id,
+          ...doc.data(),
+        })
+      );
       return promoCodes;
     } catch (error) {
       toast.error('Promosyon kodları alınırken hata oluştu.');
@@ -49,14 +57,10 @@ export const updatePromoCode = createAsyncThunk(
   async ({ id, updates }, { rejectWithValue }) => {
     try {
       const promoCodeRef = doc(db, 'promoCodes', id);
-      const updatedData = {
-        ...updates,
-        ...(updates.validFrom && { validFrom: updates.validFrom.toISOString() }),
-        ...(updates.validUntil && { validUntil: updates.validUntil.toISOString() }),
-      };
-      await updateDoc(promoCodeRef, updatedData);
+      const sanitizedUpdates = sanitizePromoCodeForFirestore(updates);
+      await updateDoc(promoCodeRef, sanitizedUpdates);
       toast.success('Promosyon kodu başarıyla güncellendi!');
-      return { id, updates: updatedData };
+      return { id, updates: sanitizedUpdates };
     } catch (error) {
       toast.error('Promosyon kodu güncellenirken hata oluştu.');
       return rejectWithValue(error.message);
@@ -79,7 +83,7 @@ const promoCodeSlice = createSlice({
       })
       .addCase(addPromoCode.fulfilled, (state, action) => {
         state.loading = false;
-        state.promoCodes.push(action.payload);
+        state.promoCodes.push(sanitizePromoCodeForRedux(action.payload));
       })
       .addCase(addPromoCode.rejected, (state, action) => {
         state.loading = false;
@@ -103,7 +107,10 @@ const promoCodeSlice = createSlice({
         state.loading = false;
         const index = state.promoCodes.findIndex((promo) => promo.id === action.payload.id);
         if (index !== -1) {
-          state.promoCodes[index] = { ...state.promoCodes[index], ...action.payload.updates };
+          state.promoCodes[index] = {
+            ...state.promoCodes[index],
+            ...sanitizePromoCodeForRedux(action.payload.updates),
+          };
         }
       })
       .addCase(updatePromoCode.rejected, (state, action) => {
