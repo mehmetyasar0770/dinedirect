@@ -310,7 +310,7 @@ function AdminDashboard() {
               Promosyon Kodu Ekle
             </Button>
           </Form>
-          ;
+
           <Table
             dataSource={promoCodes}
             columns={promoCodeColumns}
