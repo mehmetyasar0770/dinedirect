@@ -8,13 +8,13 @@ import {
 import { useEffect, useState } from "react";
 import { useSelector as usePromoSelector } from "react-redux";
 import { getPromoCodes } from "../redux/slices/promoCodeSlice";
-import { saveOrder } from "../redux/slices/orderSlice";
 
 function Cart() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const promoCodes = usePromoSelector((state) => state.promoCodes.promoCodes);
+
   useEffect(() => {
     dispatch(getPromoCodes());
   }, [dispatch]);
@@ -37,7 +37,7 @@ function Cart() {
   const handleApplyPromo = () => {
     console.log("Kullanıcı tarafından girilen kod:", promoCode);
     console.log("Mevcut promosyon kodları:", promoCodes);
-  
+
     const promo = promoCodes.find(
       (code) =>
         code.code === promoCode && // Kod eşleşmesi
@@ -45,7 +45,7 @@ function Cart() {
         new Date(code.validFrom) <= new Date() && // Geçerlilik başlangıcı
         new Date(code.validUntil) >= new Date() // Geçerlilik bitişi
     );
-  
+
     if (promo) {
       console.log("Promosyon kodu bulundu ve geçerli:", promo);
       setDiscount(promo.discount);
@@ -57,22 +57,16 @@ function Cart() {
       setAppliedPromo(null);
     }
   };
-  
-  
 
   const handleCheckout = () => {
-    const checkoutData = {
-      cartItems,
-      total: discountedTotal,
-      appliedPromo,
-    };
-  
-    // Redux store'a checkout verilerini ekle
-    dispatch(saveOrder(checkoutData));
-  
-    navigate("/checkout");
+    navigate("/checkout", {
+      state: {
+        cartItems,
+        total: discountedTotal,
+        appliedPromo,
+      },
+    });
   };
-  
 
   return (
     <div className="container mx-auto p-4">
