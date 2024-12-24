@@ -41,9 +41,8 @@ function Cart() {
     const promo = promoCodes.find(
       (code) =>
         code.code === promoCode && // Kod eşleşmesi
-        code.status === "active" && // Durum kontrolü
-        new Date(code.validFrom) <= new Date() && // Geçerlilik başlangıcı
-        new Date(code.validUntil) >= new Date() // Geçerlilik bitişi
+        code.status === "active"  // Durum kontrolü
+        
     );
 
     if (promo) {
@@ -52,7 +51,7 @@ function Cart() {
       setAppliedPromo(promo);
       alert(`Promosyon kodu başarıyla uygulandı: ${promo.code}`);
     } else {
-      alert("Geçersiz veya süresi dolmuş promosyon kodu");
+      alert("Geçersiz promosyon kodu");
       setDiscount(0);
       setAppliedPromo(null);
     }

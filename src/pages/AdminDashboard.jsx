@@ -1,7 +1,7 @@
 import { Tabs, Input, Select, Button, Table, Form, DatePicker } from "antd";
 import { useState, useEffect } from "react";
-import { getProducts, addProduct } from "../services/productService"; // Product service
-import { getCategories, addCategory } from "../services/categoryService"; // Category service
+import { getProducts, addProduct } from "../services/productService";
+import { getCategories, addCategory } from "../services/categoryService";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -9,25 +9,20 @@ import {
   getPromoCodes,
   updatePromoCode,
 } from "../redux/slices/promoCodeSlice";
+import { ref, onValue, update } from "firebase/database";
+import { realtimeDb } from "../config/firebase";
+
 const { TabPane } = Tabs;
 
 function AdminDashboard() {
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]); // Categories from Firestore
-  const [activeOrders, setActiveOrders] = useState([
-    {
-      id: 1,
-      customer: "Ahmet",
-      items: ["Pizza", "Kola"],
-      status: "Onay Bekliyor",
-    },
-    {
-      id: 2,
-      customer: "Mehmet",
-      items: ["Burger", "Çay"],
-      status: "Hazırlanıyor",
-    },
-  ]);
+  const [categories, setCategories] = useState([]);
+  const [activeOrders, setActiveOrders] = useState([]);
+  const [form] = Form.useForm();
+  const [promoForm] = Form.useForm();
+
+  const dispatch = useDispatch();
+  const { promoCodes, loading } = useSelector((state) => state.promoCodes);
 
   const orderStatuses = [
     "Onay Bekliyor",
@@ -37,20 +32,29 @@ function AdminDashboard() {
     "Teslim Edildi",
   ];
 
-  const [form] = Form.useForm();
-
-  // Fetch products and categories on component mount
+  // Fetch products, categories, and orders
   useEffect(() => {
     const fetchProductsAndCategories = async () => {
       const fetchedProducts = await getProducts();
       setProducts(fetchedProducts);
 
       const fetchedCategories = await getCategories();
-      setCategories(fetchedCategories.map((cat) => cat.name)); // Extract category names
+      setCategories(fetchedCategories.map((cat) => cat.name));
     };
 
     fetchProductsAndCategories();
-  }, []);
+
+    const ordersRef = ref(realtimeDb, "orders");
+    onValue(ordersRef, (snapshot) => {
+      const orders = snapshot.val();
+      const parsedOrders = orders
+        ? Object.keys(orders).map((key) => ({ id: key, ...orders[key] }))
+        : [];
+      setActiveOrders(parsedOrders);
+    });
+
+    dispatch(getPromoCodes());
+  }, [dispatch]);
 
   // Add new category using Firestore
   const handleAddCategory = async (values) => {
@@ -79,8 +83,8 @@ function AdminDashboard() {
   const handleAddProduct = async (values) => {
     const newProduct = {
       ...values,
-      imageURL: values.imageURL || "https://via.placeholder.com/150", // Default image if not provided
-      createAt: new Date(), // Add creation timestamp
+      imageURL: values.imageURL || "https://via.placeholder.com/150",
+      createAt: new Date(),
     };
 
     try {
@@ -93,27 +97,52 @@ function AdminDashboard() {
     }
   };
 
-  // Update order status
-  const handleUpdateOrderStatus = (id, newStatus) => {
-    setActiveOrders((prevOrders) =>
-      prevOrders.map((order) =>
-        order.id === id ? { ...order, status: newStatus } : order
-      )
-    );
+  // Add new promo code using Firestore
+
+  const handleAddPromoCode = async (values) => {
+    const promoCodeData = {
+      ...values,
+      discount: parseFloat(values.discount),
+    };
+    try {
+      await dispatch(addPromoCode(promoCodeData)).unwrap();
+      toast.success("Promosyon kodu başarıyla eklendi!");
+      promoForm.resetFields();
+    } catch (error) {
+      console.error("Promosyon kodu eklenemedi:", error);
+      toast.error("Promosyon kodu eklenemedi.");
+    }
   };
 
-  // Columns for the order status table
+  // Update order status
+  const handleUpdateOrderStatus = async (id, newStatus) => {
+    try {
+      const orderRef = ref(realtimeDb, `orders/${id}`);
+      await update(orderRef, { status: newStatus });
+      toast.success("Sipariş durumu başarıyla güncellendi!");
+    } catch (error) {
+      console.error("Sipariş durumu güncellenemedi:", error);
+      toast.error("Sipariş durumu güncellenemedi.");
+    }
+  };
+
   const orderColumns = [
     {
       title: "Müşteri",
-      dataIndex: "customer",
-      key: "customer",
+      dataIndex: "email", // Firebase'deki email alanı
+      key: "email",
+      render: (email) => email || "Bilinmiyor",
     },
     {
       title: "Ürünler",
-      dataIndex: "items",
-      key: "items",
-      render: (items) => items.join(", "),
+      dataIndex: "cartItems",
+      key: "cartItems",
+      render: (cartItems) =>
+        Array.isArray(cartItems)
+          ? cartItems
+              .map((item) => `${item.name} (${item.quantity})`)
+              .join(", ")
+          : "Ürün bilgisi bulunmuyor",
     },
     {
       title: "Durum",
@@ -135,34 +164,6 @@ function AdminDashboard() {
     },
   ];
 
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(getPromoCodes());
-  }, [dispatch]);
-
-  const { promoCodes, loading } = useSelector((state) => state.promoCodes);
-
-  const [promoForm] = Form.useForm();
-  const handleAddPromoCode = async (values) => {
-    const promoCodeData = {
-      ...values,
-      validFrom: values.validFrom.toISOString(),
-      validUntil: values.validUntil.toISOString(),
-      discount: parseFloat(values.discount),
-    };
-    console.log("Eklenecek veri:", promoCodeData); 
-    try {
-      await dispatch(addPromoCode(promoCodeData)).unwrap();
-      toast.success("Promosyon kodu başarıyla eklendi!");
-      form.resetFields();
-    } catch (error) {
-      console.error("Promosyon kodu eklenemedi:", error);
-      toast.error("Promosyon kodu eklenemedi.");
-    }
-  };
-  
-
-
   const promoCodeColumns = [
     {
       title: "Kod",
@@ -176,12 +177,6 @@ function AdminDashboard() {
       render: (value) => `${value}%`,
     },
     {
-      title: "Geçerlilik Tarihi",
-      dataIndex: "validUntil",
-      key: "validUntil",
-      render: (value) => new Date(value).toLocaleDateString(),
-    },
-    {
       title: "Durum",
       dataIndex: "status",
       key: "status",
@@ -189,9 +184,7 @@ function AdminDashboard() {
         <Select
           value={status}
           onChange={(value) =>
-            dispatch(
-              updatePromoCode({ id: record.id, updates: { status: value } })
-            )
+            dispatch(updatePromoCode({ id: record.id, updates: { status: value } }))
           }
           className="w-full"
         >
@@ -201,12 +194,12 @@ function AdminDashboard() {
       ),
     },
   ];
+  
 
   return (
     <div className="container mx-auto p-6">
       <h2 className="text-3xl font-bold mb-6">Admin Dashboard</h2>
       <Tabs defaultActiveKey="1" className="bg-white shadow-lg rounded-lg p-4">
-        {/* Add Category */}
         <TabPane tab="Kategori Ekle" key="1">
           <Form form={form} onFinish={handleAddCategory} layout="vertical">
             <Form.Item
@@ -222,7 +215,6 @@ function AdminDashboard() {
           </Form>
         </TabPane>
 
-        {/* Add Product */}
         <TabPane tab="Ürün Ekle" key="2">
           <Form form={form} onFinish={handleAddProduct} layout="vertical">
             <Form.Item
@@ -275,7 +267,6 @@ function AdminDashboard() {
           </Form>
         </TabPane>
 
-        {/* Update Order Status */}
         <TabPane tab="Sipariş Durumu Güncelle" key="3">
           <Table
             dataSource={activeOrders}
@@ -286,10 +277,11 @@ function AdminDashboard() {
         </TabPane>
 
         <TabPane tab="Promosyon Kodları" key="4">
-          <Form form={promoForm}   onFinish={(values) => {
-    console.log("Form gönderildi:", values); // Bu log tetikleniyor mu?
-    handleAddPromoCode(values);
-  }} layout="vertical">
+          <Form
+            form={promoForm}
+            onFinish={handleAddPromoCode}
+            layout="vertical"
+          >
             <Form.Item
               label="Promosyon Kodu"
               name="code"
@@ -305,30 +297,6 @@ function AdminDashboard() {
               <Input type="number" placeholder="İndirim yüzdesi girin" />
             </Form.Item>
             <Form.Item
-              label="Geçerlilik Başlangıç Tarihi"
-              name="validFrom"
-              rules={[
-                {
-                  required: true,
-                  message: "Geçerlilik başlangıç tarihi gerekli!",
-                },
-              ]}
-            >
-              <DatePicker
-                placeholder="Başlangıç tarihi seçin"
-                className="w-full"
-              />
-            </Form.Item>
-            <Form.Item
-              label="Geçerlilik Bitiş Tarihi"
-              name="validUntil"
-              rules={[
-                { required: true, message: "Geçerlilik bitiş tarihi gerekli!" },
-              ]}
-            >
-              <DatePicker placeholder="Bitiş tarihi seçin" className="w-full" />
-            </Form.Item>
-            <Form.Item
               label="Durum"
               name="status"
               rules={[{ required: true, message: "Durum seçimi gerekli!" }]}
@@ -339,10 +307,10 @@ function AdminDashboard() {
               </Select>
             </Form.Item>
             <Button type="primary" htmlType="submit" className="w-full">
-  Promosyon Kodu Ekle
-</Button>
+              Promosyon Kodu Ekle
+            </Button>
           </Form>
-
+          ;
           <Table
             dataSource={promoCodes}
             columns={promoCodeColumns}
