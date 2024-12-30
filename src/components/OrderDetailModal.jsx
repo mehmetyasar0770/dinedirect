@@ -1,4 +1,3 @@
-
 import { Modal, Button, Table } from "antd";
 
 const OrderDetailModal = ({ visible, onClose, order, onDownload }) => {
@@ -42,28 +41,31 @@ const OrderDetailModal = ({ visible, onClose, order, onDownload }) => {
         </Button>,
       ]}
     >
-    <div id="order-detail">
-    <p>
-  <strong>Sipariş Tarihi:</strong>{" "}
-  {new Intl.DateTimeFormat("tr-TR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(new Date(order.orderDate))}
-</p>
-      <p>
-        <strong>Toplam Tutar:</strong> {order.total}₺
-      </p>
-      <p>
-        <strong>Adres:</strong> {order.deliveryDetails?.address || "Belirtilmemiş"}
-      </p>
-      <br/>
-      <Table
-        dataSource={order.cartItems}
-        columns={columns}
-        rowKey="name"
-        pagination={false}
-      />
+      <div id="order-detail">
+        <p>
+          <strong>Email:</strong> {order?.email || "Belirtilmemiş"}
+        </p>
+        <p>
+          <strong>Sipariş Tarihi:</strong>{" "}
+          {new Intl.DateTimeFormat("tr-TR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          }).format(new Date(order.orderDate))}
+        </p>
+        <p>
+          <strong>Toplam Tutar:</strong> {order.total}₺
+        </p>
+        <p>
+          <strong>Adres:</strong> {order.deliveryDetails?.address || "Belirtilmemiş"}
+        </p>
+        <br />
+        <Table
+          dataSource={order.cartItems}
+          columns={columns}
+          rowKey="name"
+          pagination={false}
+        />
       </div>
     </Modal>
   );
