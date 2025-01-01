@@ -1,16 +1,16 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  updateProfile,
-} from 'firebase/auth';
-import { auth, db} from '../../config/firebase';
-import toast from 'react-hot-toast';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+  //updateProfile,
+} from "firebase/auth";
+import { auth, db } from "../../config/firebase";
+import toast from "react-hot-toast";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export const loginUser = createAsyncThunk(
-  'auth/login',
+  "auth/login",
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const userCredential = await signInWithEmailAndPassword(
@@ -20,17 +20,16 @@ export const loginUser = createAsyncThunk(
       );
 
       // Get complete user data from Firestore
-      const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
       const userData = {
         uid: userCredential.user.uid,
         email: userDoc.data().email,
         displayName: userDoc.data().fullName,
-        role: userDoc.data().role
+        role: userDoc.data().role,
       };
 
       toast.success(`Hoş geldiniz, ${userData.displayName}!`);
       return userData;
-      
     } catch (error) {
       toast.error(error.message);
       return rejectWithValue(error.message);
@@ -38,38 +37,70 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+export const fetchCurrentUser = createAsyncThunk(
+  "auth/fetchCurrentUser",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) return null;
+
+      // Firestore'dan kullanıcı bilgilerini alın
+      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+      if (userDoc.exists()) {
+        const userData = {
+          uid: currentUser.uid,
+          email: userDoc.data().email,
+          displayName: userDoc.data().fullName,
+          role: userDoc.data().role,
+        };
+
+        // Redux store'u güncelle
+        dispatch(setUser(userData));
+        return userData;
+      } else {
+        throw new Error("Kullanıcı bilgisi bulunamadı.");
+      }
+    } catch (error) {
+      console.error("Mevcut kullanıcı bilgisi alınırken hata:", error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
 export const registerUser = createAsyncThunk(
-  'auth/register',
+  "auth/register",
   async ({ email, password, fullName }, { rejectWithValue }) => {
     try {
       // Create user with email/password
       const userCredential = await createUserWithEmailAndPassword(
-        auth, 
+        auth,
         email,
         password
       );
 
       // Store user data including fullName in Firestore
-      await setDoc(doc(db, 'users', userCredential.user.uid), {
-        role: 'user',
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        role: "user",
         email,
         fullName,
         displayName: fullName,
-        uid: userCredential.user.uid
+        uid: userCredential.user.uid,
       });
 
       // Get user data from Firestore to ensure we use stored data
-      const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
       const userData = {
         uid: userCredential.user.uid,
         email: userDoc.data().email,
         displayName: userDoc.data().fullName, // Get display name from Firestore
-        role: userDoc.data().role
+        role: userDoc.data().role,
       };
 
-      toast.success(`Hesabınız başarıyla oluşturuldu, ${userData.displayName}!`);
+      toast.success(
+        `Hesabınız başarıyla oluşturuldu, ${userData.displayName}!`
+      );
       return userData;
-
     } catch (error) {
       toast.error(error.message);
       return rejectWithValue(error.message);
@@ -77,16 +108,12 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-
-
-
-
 export const logoutUser = createAsyncThunk(
-  'auth/logout',
+  "auth/logout",
   async (_, { rejectWithValue }) => {
     try {
       await signOut(auth);
-      toast.success('Başarıyla çıkış yaptınız!');
+      toast.success("Başarıyla çıkış yaptınız!");
     } catch (error) {
       toast.error(error.message);
       return rejectWithValue(error.message);
@@ -95,7 +122,7 @@ export const logoutUser = createAsyncThunk(
 );
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState: {
     user: null,
     loading: true,
@@ -131,6 +158,19 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      .addCase(fetchCurrentUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(fetchCurrentUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
       .addCase(logoutUser.pending, (state) => {
         state.loading = true;
       })
