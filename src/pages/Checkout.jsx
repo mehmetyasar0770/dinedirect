@@ -45,6 +45,7 @@ function Checkout() {
       const orderData = {
         userId: user.uid,
         email: user.email,
+        userName:user.displayName,
         cartItems,
         total: discountedTotal,
         //appliedPromo,

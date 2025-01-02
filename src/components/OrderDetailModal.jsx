@@ -43,7 +43,7 @@ const OrderDetailModal = ({ visible, onClose, order, onDownload }) => {
     >
       <div id="order-detail">
         <p>
-          <strong>Email:</strong> {order?.email || "Belirtilmemiş"}
+          <strong>Sayın:</strong> {order?.userName || "Belirtilmemiş"}
         </p>
         <p>
           <strong>Sipariş Tarihi:</strong>{" "}
