@@ -31,7 +31,7 @@ function CustomerOrders() {
       const userOrders = Object.entries(orders)
         .map(([id, order]) => ({ id, ...order }))
         .filter((order) => order.userId === user.uid);
-
+        
       const active = userOrders.filter(
         (order) => order.status !== "Teslim Edildi"
       );

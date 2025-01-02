@@ -9,7 +9,7 @@ const InfoModal = ({ isVisible, onClose }) => {
       footer={null}
     >
       <p className="text-lg font-semibold text-center">
-        İlk siparişinize özel <strong>"FIRST"</strong> promosyon koduyla %25
+        Ocak ayı boyunca siparişlerinizde <strong>"OCAK"</strong> promosyon koduyla %25
         indirim kazanın!
       </p>
     </Modal>
