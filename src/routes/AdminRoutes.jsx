@@ -4,15 +4,15 @@ import AdminDashboard from "../pages/AdminDashboard";
 
 const adminRoutes = [
   {
-    path: "/",
+    path: "/admin",
     element: (
-      <RequireRole allowedRole={"admin"}>
+      <RequireRole allowedRoles={["admin"]}>
         <AdminLayout />
       </RequireRole>
     ),
     children: [
       {
-        path: "/admin-dashboard", // /admin/dashboard
+        path: "dashboard", // /admin/dashboard
         element: <AdminDashboard />,
       },
     ],

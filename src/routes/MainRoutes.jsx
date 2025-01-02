@@ -6,6 +6,8 @@ import Login from "../pages/Login";
 import Checkout from "../pages/Checkout";
 import CustomerOrders from "../pages/CustomerOrders";
 import NotFound from "../pages/NotFound";
+import RequireRole from "../auth/RequireRole";
+
 
 const mainRoutes = [
   {
@@ -18,11 +20,11 @@ const mainRoutes = [
       },
       {
         path: "/menu",
-        element: <Menu />,
+        element: (  <RequireRole allowedRoles={["user","admin"]}><Menu /></RequireRole>),
       },
       {
         path: "/cart",
-        element: <CartPage />,
+        element: (  <RequireRole allowedRoles={["user","admin"]}><CartPage /></RequireRole>),
       },
       {
         path: "/login",
@@ -30,11 +32,11 @@ const mainRoutes = [
       },
       {
         path: "/checkout",
-        element: <Checkout />,
+        element: (  <RequireRole allowedRoles={["user","admin"]}><Checkout /></RequireRole>),
       },
       {
         path: "/customer-orders",
-        element: <CustomerOrders />,
+        element: (  <RequireRole allowedRoles={["user","admin"]}><CustomerOrders /></RequireRole>),
       },
       {
         path: "*",

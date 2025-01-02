@@ -42,7 +42,7 @@ function Header() {
     }
 
     if (currentUserRole === "admin") {
-      navigate("/admin-dashboard");
+      navigate("/admin/dashboard");
     } else if (currentUserRole === "user") {
       navigate("/customer-orders");
     } else {
