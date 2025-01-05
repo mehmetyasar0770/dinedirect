@@ -7,7 +7,7 @@ const RequireRole = ({ children, allowedRoles }) => {
   );
   const { user, loading: authLoading } = useSelector((state) => state.auth);
 
-  // Hem auth hem de role yüklenirken bekleme göster
+  // Yüklenme durumunda bekleme göster
   if (authLoading || roleLoading) {
     return <div className="p-6">Yükleniyor...</div>;
   }
@@ -17,7 +17,12 @@ const RequireRole = ({ children, allowedRoles }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // Kullanıcının rolü izin verilen rollerden birinde değilse menüye yönlendir
+  // Kullanıcının rolü henüz yüklenmediyse herhangi bir işlem yapma
+  if (!currentUserRole) {
+    return <div className="p-6">Rol bilgisi alınıyor...</div>;
+  }
+
+  // Kullanıcının rolü izin verilen roller arasında değilse menüye yönlendir
   if (!allowedRoles.includes(currentUserRole)) {
     return <Navigate to="/menu" replace />;
   }
