@@ -5,6 +5,7 @@ import roleReducer from "./slices/roleSlice";
 import menuReducer from './slices/menuSlice';
 import promoCodeReducer from './slices/promoCodeSlice';
 import orderReducer from "./slices/orderSlice";
+import checkoutReducer from "./slices/checkoutSlice";
 
 const store = configureStore({
     reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
         menu:menuReducer,
         promoCodes: promoCodeReducer,
         orders: orderReducer,
+        checkout:checkoutReducer,
     }
 })
 
