@@ -41,7 +41,7 @@ const mainRoutes = [
       },
       {
         path: "/admin/dashboard", // /admin/dashboard
-        element: <AdminDashboard />,
+        element: (  <RequireRole allowedRoles={["admin"]}><AdminDashboard /></RequireRole>),
       },
       {
         path: "*",
