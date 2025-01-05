@@ -1,4 +1,4 @@
-import InputField from "./InputField";
+import InputField from "./UI Components/InputField";
 import { useDispatch, useSelector } from "react-redux";
 import { setPaymentDetails, nextStep } from "../redux/slices/checkoutSlice";
 

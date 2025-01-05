@@ -35,9 +35,7 @@ function Cart() {
   const discountedTotal = subTotal - (subTotal * discount) / 100;
 
   const handleApplyPromo = () => {
-    console.log("Kullanıcı tarafından girilen kod:", promoCode);
-    console.log("Mevcut promosyon kodları:", promoCodes);
-
+   
     const promo = promoCodes.find(
       (code) =>
         code.code === promoCode && // Kod eşleşmesi

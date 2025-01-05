@@ -1,5 +1,5 @@
-import InputField from "./InputField";
-import TextArea from "./TextArea";
+import InputField from "./UI Components/InputField";
+import TextArea from "./UI Components/TextArea";
 import { useDispatch, useSelector } from "react-redux";
 import { setDeliveryDetails, nextStep } from "../redux/slices/checkoutSlice";
 
