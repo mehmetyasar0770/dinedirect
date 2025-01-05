@@ -3,7 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 
 const MainLayout = () => {
     const location = useLocation();
-    const excludedPaths = ["/login", "/admin-dashboard"];
+    const excludedPaths = ["/login"];
   return (
     <div className="main">
       {!excludedPaths.some((path) => location.pathname.startsWith(path)) && <Header />}

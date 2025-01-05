@@ -7,6 +7,7 @@ import Checkout from "../pages/Checkout";
 import CustomerOrders from "../pages/CustomerOrders";
 import NotFound from "../pages/NotFound";
 import RequireRole from "../auth/RequireRole";
+import AdminDashboard from "../pages/AdminDashboard";
 
 
 const mainRoutes = [
@@ -37,6 +38,10 @@ const mainRoutes = [
       {
         path: "/customer-orders",
         element: (  <RequireRole allowedRoles={["user","admin"]}><CustomerOrders /></RequireRole>),
+      },
+      {
+        path: "/admin/dashboard", // /admin/dashboard
+        element: <AdminDashboard />,
       },
       {
         path: "*",
