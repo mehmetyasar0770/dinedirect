@@ -5,6 +5,7 @@ import {
   decrementItemCount,
   removeItem,
 } from "../redux/slices/cartSlice";
+import { resetCheckout } from "../redux/slices/checkoutSlice";
 import { useEffect, useState } from "react";
 import { useSelector as usePromoSelector } from "react-redux";
 import { getPromoCodes } from "../redux/slices/promoCodeSlice";
@@ -19,7 +20,7 @@ function Cart() {
     dispatch(getPromoCodes());
   }, [dispatch]);
 
-  console.log("Mevcut promosyon kodları:", promoCodes);
+  
 
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -56,6 +57,7 @@ function Cart() {
   };
 
   const handleCheckout = () => {
+    dispatch(resetCheckout());
     navigate("/checkout", {
       state: {
         cartItems,
