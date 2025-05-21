@@ -9,7 +9,7 @@ const InfoModal = ({ isVisible, onClose }) => {
       footer={null}
     >
       <p className="text-lg font-semibold text-center">
-        Ocak ayı boyunca siparişlerinizde <strong>"OCAK"</strong> promosyon koduyla %25
+        2025 yaz mevsimi boyunca siparişlerinizde <strong>"YAZ25"</strong> promosyon koduyla %25
         indirim kazanın!
       </p>
     </Modal>
